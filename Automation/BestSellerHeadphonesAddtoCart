@@ -1,0 +1,65 @@
+# Code
+package amazonpurchase;
+
+import org.testng.annotations.Test;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+
+public class BestSellerHeadphones_TestNG {
+	
+	public static WebDriver driver;
+	public static WebDriverWait wait; 
+	public static String checkoutTxt;
+
+  @BeforeTest
+  public static void initialSetUp() {
+	
+	driver =  new ChromeDriver();	// Initialise the chrome driver
+    driver.manage().window().maximize();	//Maximise the browser
+    driver.get("http://www.amazon.com");	//Enter the Url
+		
+	}
+
+  @Test
+  public static void addToCart() {
+	
+	driver.findElement(By.id("twotabsearchtextbox")).sendKeys("Headphones");	//Enter the Text in search box
+    driver.findElement(By.xpath("//input[@type='submit' and @value='Go']")).click();	//Click the search icon
+    
+    List<WebElement> selectBestSellerProduct = driver.findElements(By.xpath("//span[text()='Best Seller']/ancestor::div[@data-asin and not(.//span[.='Sponsored'])][1]"
+    		+ "//span[@data-component-type='s-product-image']//a"));	//Select parent element of Best Seller Product and avoid duplicate/repeat product
+    
+    List<String> getHrefAttribute = selectBestSellerProduct.stream().map(element -> element.getAttribute("href")).collect(Collectors.toList());	//Get href attribute using stream from best seller element.
+    																		
+//    System.out.println(getHrefAttribute);	//Print the href attributes just to view.
+    
+    wait = new WebDriverWait(driver, 20);
+    
+    getHrefAttribute.forEach(href -> {						//Iterating best seller to navigate and add to cart
+        driver.get(href);
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("add-to-cart-button"))).click();
+
+    });
+    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+    checkoutTxt = driver.findElement(By.xpath("//span[@id='attach-accessory-proceed-to-checkout-text']")).getText();
+    checkoutTxt.contains("Proceed to checkout ("+getHrefAttribute.size()+" items)");	//Validating the count of products added to cart
+}
+  
+  @AfterTest
+  public void afterTest() {
+	  driver.close();
+  }
+
+}
+
