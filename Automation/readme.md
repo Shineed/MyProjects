@@ -1,3 +1,5 @@
+This is the read file to explain how I have done the scenario
+
 I have used Selenium, Java and TestNG framework to code this program. 
 
 Before starting the test, it will open the chrome browser and enter the url once the browser get maximised.
