@@ -1,4 +1,4 @@
-This is the read file to explain how I have done the scenario
+This is the readme file to explain how I have done the scenario
 
 I have used Selenium, Java and TestNG framework to code this program. 
 
